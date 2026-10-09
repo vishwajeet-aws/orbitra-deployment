@@ -17,7 +17,7 @@ function DashboardPage() {
       <DeploymentActivity />
       <InfrastructureHealth />
       <RecentProjects />
-      <div className="grid grid-cols-1 items-stretch gap-6 2xl:grid-cols-2">
+      <div className={`grid grid-cols-1 items-stretch gap-6 ${dashboard.costOverview ? '2xl:grid-cols-2' : ''}`}>
         {dashboard.costOverview && <CloudCostOverview />}
         <QuickActions />
       </div>
