@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bell, CircleHelp, LogOut, Menu, Search, Settings, UserRound } from 'lucide-react'
 import { SAMPLE_CURRENT_USER } from '../../data/currentUser.js'
 import { SAMPLE_NOTIFICATIONS } from '../../data/notifications.js'
+import { readPreferences } from '../../services/preferences.js'
 import Button from '../common/Button.jsx'
 
 function Topbar({ onOpenSidebar, onOpenSearch }) {
@@ -10,8 +11,11 @@ function Topbar({ onOpenSidebar, onOpenSearch }) {
   const [profileOpen, setProfileOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  const [preferences, setPreferences] = useState(() => readPreferences())
   const menuRef = useRef(null)
-  const unreadCount = SAMPLE_NOTIFICATIONS.filter((item) => item.unread).length
+  const profile = preferences.profile
+  const visibleNotifications = SAMPLE_NOTIFICATIONS.filter((item) => preferences.notifications[item.category] !== false)
+  const unreadCount = visibleNotifications.filter((item) => item.unread).length
 
   useEffect(() => {
     const onClick = (event) => {
@@ -25,6 +29,14 @@ function Topbar({ onOpenSidebar, onOpenSearch }) {
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
   }, [])
+
+  useEffect(() => {
+    const onPreferencesChanged = (event) => { if (event.detail) setPreferences(event.detail) }
+    window.addEventListener('orbitra:preferences-changed', onPreferencesChanged)
+    return () => window.removeEventListener('orbitra:preferences-changed', onPreferencesChanged)
+  }, [])
+
+  const initials = profile.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || SAMPLE_CURRENT_USER.initials
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-3 border-b border-orbitra-border bg-orbitra-900/80 px-4 backdrop-blur">
@@ -97,7 +109,7 @@ function Topbar({ onOpenSidebar, onOpenSearch }) {
                 Sample notifications
               </p>
               <ul>
-                {SAMPLE_NOTIFICATIONS.map((item) => (
+                {visibleNotifications.map((item) => (
                   <li key={item.id} className="rounded-lg px-2 py-2 hover:bg-orbitra-800">
                     <p className="text-sm text-orbitra-text">{item.title}</p>
                     <p className="text-xs text-orbitra-muted">
@@ -106,6 +118,7 @@ function Topbar({ onOpenSidebar, onOpenSearch }) {
                   </li>
                 ))}
               </ul>
+              {visibleNotifications.length === 0 ? <p className="px-2 py-3 text-sm text-orbitra-muted">All sample notification categories are turned off.</p> : null}
             </div>
           ) : null}
         </div>
@@ -123,16 +136,16 @@ function Topbar({ onOpenSidebar, onOpenSearch }) {
             aria-expanded={profileOpen}
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-purple/20 text-xs font-semibold text-accent-purple">
-              {SAMPLE_CURRENT_USER.initials}
+              {initials}
             </span>
             <span className="hidden text-left md:block">
-              <span className="block text-sm text-orbitra-text">{SAMPLE_CURRENT_USER.name}</span>
+              <span className="block text-sm text-orbitra-text">{profile.name}</span>
               <span className="block text-xs text-orbitra-muted">{SAMPLE_CURRENT_USER.role}</span>
             </span>
           </button>
           {profileOpen ? (
             <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-orbitra-border bg-orbitra-850 p-1 shadow-xl">
-              <p className="px-3 py-2 text-xs text-orbitra-muted">{SAMPLE_CURRENT_USER.email}</p>
+              <p className="px-3 py-2 text-xs text-orbitra-muted">{profile.email}</p>
               <button
                 type="button"
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-orbitra-text hover:bg-orbitra-800"

@@ -22,6 +22,38 @@
   --color-accent-orange: #f97316;
 }
 
+html[data-orbitra-theme='light'] {
+  color-scheme: light;
+  --color-orbitra-950: #eef2f7;
+  --color-orbitra-900: #f8fafc;
+  --color-orbitra-850: #ffffff;
+  --color-orbitra-800: #f1f5f9;
+  --color-orbitra-700: #e2e8f0;
+  --color-orbitra-600: #cbd5e1;
+  --color-orbitra-500: #94a3b8;
+  --color-orbitra-text: #0f172a;
+  --color-orbitra-muted: #475569;
+  --color-orbitra-border: #cbd5e1;
+  --color-accent-blue: #2563eb;
+  --color-accent-purple: #7c3aed;
+  --color-accent-cyan: #0e7490;
+  --color-accent-green: #15803d;
+  --color-accent-orange: #c2410c;
+}
+
+html[data-density='compact'] {
+  --spacing: 0.22rem;
+}
+
+html[data-reduce-motion='true'] *,
+html[data-reduce-motion='true'] *::before,
+html[data-reduce-motion='true'] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
 html,
 body,
 #root {
@@ -33,6 +65,7 @@ body {
   background: var(--color-orbitra-900);
   color: var(--color-orbitra-text);
   font-family: var(--font-sans);
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 #root {

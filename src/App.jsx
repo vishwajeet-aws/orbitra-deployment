@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import DashboardLayout from './layouts/DashboardLayout.jsx'
 import PublicLayout from './layouts/PublicLayout.jsx'
 import WorkspaceDataLayout from './layouts/WorkspaceDataLayout.jsx'
 import Spinner from './components/common/Spinner.jsx'
+import { applyPreferences, readPreferences } from './services/preferences.js'
 
 const AiAssistantPage = lazy(() => import('./pages/AiAssistantPage.jsx'))
 const ContainersPage = lazy(() => import('./pages/ContainersPage.jsx'))
@@ -26,6 +27,8 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'))
 const TerraformPage = lazy(() => import('./pages/TerraformPage.jsx'))
 
 function App() {
+  useEffect(() => { applyPreferences(readPreferences()) }, [])
+
   return (
     <Suspense
       fallback={(

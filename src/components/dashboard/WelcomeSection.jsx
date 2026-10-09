@@ -1,6 +1,7 @@
 import { ArrowUpRight, CalendarDays, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SAMPLE_CURRENT_USER } from '../../data/currentUser.js'
+import { readPreferences } from '../../services/preferences.js'
 
 function getGreeting(hour) {
   if (hour < 12) return 'Good morning'
@@ -17,6 +18,7 @@ function WelcomeSection() {
     day: 'numeric',
     year: 'numeric',
   }).format(now)
+  const profileName = readPreferences().profile.name || SAMPLE_CURRENT_USER.name
 
   return (
     <section className="relative isolate overflow-hidden rounded-2xl border border-orbitra-border bg-orbitra-850 p-5 sm:p-7 lg:p-8">
@@ -39,7 +41,7 @@ function WelcomeSection() {
             Dashboard
           </h1>
           <p className="mt-2 text-sm leading-6 text-orbitra-muted sm:text-base">
-            {greeting}, {SAMPLE_CURRENT_USER.name.split(' ')[0]}. Here’s a snapshot of your cloud workspace.
+            {greeting}, {profileName.split(' ')[0]}. Here’s a snapshot of your cloud workspace.
             All metrics shown in this demo are sample data.
           </p>
           <p className="mt-4 inline-flex items-center gap-2 text-sm text-orbitra-muted">
