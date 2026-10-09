@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+
+  --color-orbitra-950: #05070d;
+  --color-orbitra-900: #070b14;
+  --color-orbitra-850: #0b1220;
+  --color-orbitra-800: #111827;
+  --color-orbitra-700: #1a2333;
+  --color-orbitra-600: #243044;
+  --color-orbitra-500: #334155;
+
+  --color-orbitra-text: #e5e7eb;
+  --color-orbitra-muted: #94a3b8;
+  --color-orbitra-border: #1e293b;
+
+  --color-accent-blue: #3b82f6;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-cyan: #22d3ee;
+  --color-accent-green: #22c55e;
+  --color-accent-orange: #f97316;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-orbitra-900);
+  color: var(--color-orbitra-text);
+  font-family: var(--font-sans);
+}
+
+#root {
+  width: 100%;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent-blue) 40%, transparent);
+}
