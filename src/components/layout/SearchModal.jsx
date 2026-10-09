@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { appNavItems } from '../../data/navigation.js'
@@ -7,6 +7,10 @@ function SearchModal({ open, onClose }) {
   const navigate = useNavigate()
   const inputRef = useRef(null)
   const [query, setQuery] = useState('')
+  const handleClose = useCallback(() => {
+    setQuery('')
+    onClose()
+  }, [onClose])
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase()
@@ -15,26 +19,23 @@ function SearchModal({ open, onClose }) {
   }, [query])
 
   useEffect(() => {
-    if (!open) {
-      setQuery('')
-      return undefined
-    }
+    if (!open) return undefined
 
     inputRef.current?.focus()
 
     const onKeyDown = (event) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') handleClose()
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
+  }, [open, handleClose])
 
   if (!open) return null
 
   const goTo = (path) => {
     navigate(path)
-    onClose()
+    handleClose()
   }
 
   return (
@@ -43,7 +44,7 @@ function SearchModal({ open, onClose }) {
         type="button"
         aria-label="Close search"
         className="absolute inset-0 bg-black/60"
-        onClick={onClose}
+        onClick={handleClose}
       />
       <div
         role="dialog"
