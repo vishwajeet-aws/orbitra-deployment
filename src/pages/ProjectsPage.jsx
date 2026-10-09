@@ -71,7 +71,7 @@ function ProjectsPage() {
         </form>
       </Modal>
       <Modal open={modal?.type === 'delete'} title="Delete this project?" onClose={() => setModal(null)}>
-        <p className="text-sm leading-6 text-orbitra-muted">Remove <strong className="text-orbitra-text">{modal?.project.name}</strong> from this demo session? This cannot be undone in the current view.</p>
+        <p className="text-sm leading-6 text-orbitra-muted">Remove <strong className="text-orbitra-text">{modal?.project?.name}</strong> from this demo session? This cannot be undone in the current view.</p>
         <div className="mt-5 flex justify-end gap-2"><Button variant="secondary" onClick={() => setModal(null)}>Keep project</Button><Button variant="danger" onClick={() => { deleteProject(modal.project.id); setModal(null) }}><Trash2 size={15} /> Delete project</Button></div>
       </Modal>
     </div>
