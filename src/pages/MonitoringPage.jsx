@@ -1,12 +1,36 @@
-import PlaceholderPage from '../components/common/PlaceholderPage.jsx'
+import { useMemo, useState } from 'react'
+import { Activity, AlertTriangle, Cpu, MemoryStick, Network, Server, ShieldCheck } from 'lucide-react'
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import Badge from '../components/common/Badge.jsx'
+import Card from '../components/common/Card.jsx'
+import { SAMPLE_ALERTS, SAMPLE_MONITORING_RANGES } from '../data/monitoring.js'
+import { SAMPLE_SERVICE_HEALTH } from '../data/infrastructureHealth.js'
+
+const severityTone = { Critical: 'danger', Warning: 'warning', Info: 'blue' }
+const serviceTone = { Healthy: 'success', Attention: 'warning', Degraded: 'danger', Unknown: 'gray' }
 
 function MonitoringPage() {
-  return (
-    <PlaceholderPage
-      title="Monitoring"
-      description="Resource charts and mock alerts will be built in Phase 7."
-    />
-  )
+  const [range, setRange] = useState('1h')
+  const [severity, setSeverity] = useState('All severities')
+  const chartData = SAMPLE_MONITORING_RANGES[range].points
+  const latest = chartData[chartData.length - 1]
+  const alerts = useMemo(() => SAMPLE_ALERTS.filter((alert) => severity === 'All severities' || alert.severity === severity), [severity])
+
+  return <div className="space-y-6">
+    <header className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm text-accent-cyan">Observability</p><h1 className="mt-1 text-2xl font-semibold text-orbitra-text">Monitoring</h1><p className="mt-2 text-sm text-orbitra-muted">Explore sample resource history, service health, and alert examples.</p></div><Badge tone="orange">Mock telemetry</Badge></header>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Metric icon={Cpu} label="CPU usage" value={latest.cpu} unit="%" tone={latest.cpu > 80 ? 'warning' : 'cyan'}/><Metric icon={MemoryStick} label="Memory usage" value={latest.memory} unit="%" tone={latest.memory > 80 ? 'warning' : 'purple'}/><Metric icon={Network} label="Network" value={latest.network} unit="Mbps" tone="blue"/><Metric icon={AlertTriangle} label="Open alerts" value={SAMPLE_ALERTS.filter((alert) => alert.state !== 'Resolved').length} unit="" tone="warning"/></div>
+    <Card title="Resource usage history" description={`Illustrative CPU, memory, and network readings · ${SAMPLE_MONITORING_RANGES[range].label}`}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div className="flex flex-wrap gap-3 text-xs text-orbitra-muted"><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-accent-cyan"/>CPU</span><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-accent-purple"/>Memory</span><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-accent-blue"/>Network</span></div><label className="flex items-center gap-2 text-xs text-orbitra-muted">Time range<select aria-label="Monitoring time range" value={range} onChange={(event) => setRange(event.target.value)} className="rounded-lg border border-orbitra-border bg-orbitra-900 px-3 py-2 text-sm text-orbitra-text">{Object.entries(SAMPLE_MONITORING_RANGES).map(([key, item]) => <option key={key} value={key}>{item.label}</option>)}</select></label></div>
+      <div className="h-72 w-full" role="img" aria-label={`Sample CPU, memory, and network chart for ${SAMPLE_MONITORING_RANGES[range].label}`}><ResponsiveContainer width="100%" height="100%"><LineChart data={chartData} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}><CartesianGrid stroke="#243044" strokeDasharray="3 3"/><XAxis dataKey="time" tick={{ fill: '#8b9bb4', fontSize: 11 }} tickLine={false} axisLine={false}/><YAxis yAxisId="percent" domain={[0, 100]} tick={{ fill: '#8b9bb4', fontSize: 11 }} tickLine={false} axisLine={false} unit="%"/><YAxis yAxisId="network" orientation="right" domain={[0, 60]} tick={{ fill: '#8b9bb4', fontSize: 11 }} tickLine={false} axisLine={false} unit=" Mbps"/><Tooltip contentStyle={{ backgroundColor: '#0b1220', border: '1px solid #243044', borderRadius: 12, color: '#e5e7eb' }} formatter={(value, name) => [`${value}${name === 'Network' ? ' Mbps' : '%'}`, name]}/><Legend wrapperStyle={{ display: 'none' }}/><Line yAxisId="percent" type="monotone" dataKey="cpu" name="CPU" stroke="#22d3ee" strokeWidth={2} dot={false} activeDot={{ r: 4 }}/><Line yAxisId="percent" type="monotone" dataKey="memory" name="Memory" stroke="#a78bfa" strokeWidth={2} dot={false} activeDot={{ r: 4 }}/><Line yAxisId="network" type="monotone" dataKey="network" name="Network" stroke="#60a5fa" strokeWidth={2} dot={false} activeDot={{ r: 4 }}/></LineChart></ResponsiveContainer></div>
+      <p className="mt-3 text-xs text-orbitra-muted">All points are synthetic example metrics, not live telemetry.</p>
+    </Card>
+    <div className="grid gap-5 xl:grid-cols-[1fr_1.15fr]">
+      <Card title="Service health" description="Example integration indicators only"><div className="space-y-3">{SAMPLE_SERVICE_HEALTH.map((service) => { const Icon = service.status === 'Healthy' ? ShieldCheck : service.status === 'Attention' ? AlertTriangle : Server; return <div key={service.id} className="flex items-center gap-3 rounded-xl border border-orbitra-border bg-orbitra-900/50 p-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orbitra-800 text-orbitra-muted"><Icon size={16}/></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-orbitra-text">{service.name}</p><p className="truncate text-xs text-orbitra-muted">{service.detail}</p></div><Badge tone={serviceTone[service.status] || service.tone || 'gray'}>{service.status}</Badge></div> })}</div></Card>
+      <Card title="Sample alerts" description="Alerts are invented examples for this interface."><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><span className="text-xs text-orbitra-muted">{alerts.length} shown · {SAMPLE_ALERTS.length} total</span><label className="text-xs text-orbitra-muted">Severity<select aria-label="Filter alerts by severity" value={severity} onChange={(event) => setSeverity(event.target.value)} className="ml-2 rounded-lg border border-orbitra-border bg-orbitra-900 px-3 py-2 text-sm text-orbitra-text"><option>All severities</option><option>Critical</option><option>Warning</option><option>Info</option></select></label></div><div className="space-y-3">{alerts.map((alert) => <article key={alert.id} className="rounded-xl border border-orbitra-border bg-orbitra-900/50 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><Badge tone={severityTone[alert.severity]}>{alert.severity}</Badge><span className="text-xs text-orbitra-muted">{alert.service}</span></div><time className="text-xs text-orbitra-muted">{alert.time}</time></div><p className="mt-3 text-sm leading-5 text-orbitra-text">{alert.message}</p><p className="mt-2 text-xs text-orbitra-muted">Example state: {alert.state}</p></article>)}</div></Card>
+    </div>
+    <p className="rounded-lg border border-accent-orange/20 bg-accent-orange/5 p-3 text-xs leading-5 text-orbitra-muted"><Activity size={14} className="mr-2 inline text-accent-orange"/>Orbitra has not inspected real infrastructure. Charts, health states, and alerts on this page are labeled sample data.</p>
+  </div>
 }
 
+function Metric({ icon: Icon, label, value, unit, tone }) { const color = { cyan: 'text-accent-cyan bg-accent-cyan/10', purple: 'text-accent-purple bg-accent-purple/10', blue: 'text-accent-blue bg-accent-blue/10', warning: 'text-accent-orange bg-accent-orange/10' }[tone]; return <Card className="p-4"><div className="flex items-center gap-3"><span className={`flex h-9 w-9 items-center justify-center rounded-lg ${color}`}><Icon size={17}/></span><div><p className="text-xs text-orbitra-muted">{label}</p><p className="mt-0.5 text-xl font-semibold text-orbitra-text">{value}{unit}</p></div></div><p className="mt-3 text-xs text-orbitra-muted">Latest sample reading</p></Card> }
 export default MonitoringPage
