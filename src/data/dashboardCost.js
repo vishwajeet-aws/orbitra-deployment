@@ -12,6 +12,11 @@ export const SAMPLE_COST_PERIODS = {
     ],
     recommendation: 'Review idle development instances and schedule them to stop outside working hours.',
     potentialSavings: 47,
+    savingsSuggestions: [
+      { id: 'schedule', title: 'Schedule non-production compute', detail: 'Stop sample development workers outside working hours.', savings: 22, tone: 'blue' },
+      { id: 'storage', title: 'Review unattached storage', detail: 'Check example volumes that are no longer used.', savings: 15, tone: 'purple' },
+      { id: 'network', title: 'Reduce cross-zone traffic', detail: 'Review service placement and sample egress patterns.', savings: 10, tone: 'cyan' },
+    ],
   },
   '30d': {
     label: 'Last 30 days',
@@ -25,6 +30,11 @@ export const SAMPLE_COST_PERIODS = {
     ],
     recommendation: 'Compare sample compute requests with usage and right-size the largest worker pool.',
     potentialSavings: 225,
+    savingsSuggestions: [
+      { id: 'compute', title: 'Right-size the worker pool', detail: 'Compare illustrative CPU requests with typical usage.', savings: 125, tone: 'blue' },
+      { id: 'storage', title: 'Add a storage lifecycle policy', detail: 'Expire old sample artifacts after the retention window.', savings: 60, tone: 'purple' },
+      { id: 'schedule', title: 'Schedule development resources', detail: 'Power down non-production capacity overnight.', savings: 40, tone: 'cyan' },
+    ],
   },
   '90d': {
     label: 'Last 90 days',
@@ -38,5 +48,10 @@ export const SAMPLE_COST_PERIODS = {
     ],
     recommendation: 'Review reserved capacity assumptions and clean up unattached sample storage volumes.',
     potentialSavings: 676,
+    savingsSuggestions: [
+      { id: 'compute', title: 'Review long-running capacity', detail: 'Compare steady sample workloads with reserved capacity.', savings: 350, tone: 'blue' },
+      { id: 'storage', title: 'Remove stale storage copies', detail: 'Review old backups and unattached example volumes.', savings: 210, tone: 'purple' },
+      { id: 'schedule', title: 'Schedule non-production resources', detail: 'Reduce idle time across sample development systems.', savings: 116, tone: 'cyan' },
+    ],
   },
 }
