@@ -1,8 +1,8 @@
-import { CircleCheck, Clock3, ExternalLink, X, Loader2 } from 'lucide-react'
+import { CircleCheck, Clock3, ExternalLink, X, Loader2, Ban } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../common/Badge.jsx'
 import Card from '../common/Card.jsx'
-import { SAMPLE_RECENT_DEPLOYMENTS } from '../../data/recentDeployments.js'
+import { useDeployments } from '../../contexts/DeploymentsContext.jsx'
 
 const statusDetails = {
   succeeded: {
@@ -23,6 +23,12 @@ const statusDetails = {
     Icon: Loader2,
     iconClass: 'animate-spin text-accent-cyan',
   },
+  cancelled: {
+    label: 'Cancelled',
+    tone: 'gray',
+    Icon: Ban,
+    iconClass: 'text-orbitra-muted',
+  },
 }
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -31,6 +37,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 })
 
 function DeploymentActivity() {
+  const { deployments } = useDeployments()
   return (
     <Card
       title="Deployment activity"
@@ -60,14 +67,16 @@ function DeploymentActivity() {
             </tr>
           </thead>
           <tbody className="divide-y divide-orbitra-border">
-            {SAMPLE_RECENT_DEPLOYMENTS.map((deployment) => {
+            {deployments.slice(0, 5).map((deployment) => {
               const status = statusDetails[deployment.status]
               const StatusIcon = status.Icon
 
               return (
                 <tr key={deployment.id} className="transition-colors hover:bg-orbitra-800/50">
                   <th scope="row" className="whitespace-nowrap px-3 py-4 font-medium text-orbitra-text">
-                    {deployment.application}
+                    <Link to={`/deployments/${deployment.id}`} className="rounded hover:text-accent-cyan focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-cyan">
+                      {deployment.application}
+                    </Link>
                   </th>
                   <td className="whitespace-nowrap px-3 py-4 text-orbitra-muted">
                     {deployment.environment}

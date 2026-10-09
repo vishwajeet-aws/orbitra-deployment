@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import Badge from '../common/Badge.jsx'
 import Card from '../common/Card.jsx'
 import Modal from '../common/Modal.jsx'
-import { SAMPLE_RECENT_PROJECTS } from '../../data/recentProjects.js'
+import { useProjects } from '../../contexts/ProjectsContext.jsx'
 
 const updateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
@@ -130,6 +130,7 @@ function RecentProjectCard({ project }) {
 }
 
 function RecentProjects() {
+  const { projects } = useProjects()
   return (
     <Card
       title="Recent projects"
@@ -146,7 +147,7 @@ function RecentProjects() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        {SAMPLE_RECENT_PROJECTS.map((project) => (
+        {projects.slice(0, 4).map((project) => (
           <RecentProjectCard key={project.id} project={project} />
         ))}
       </div>
